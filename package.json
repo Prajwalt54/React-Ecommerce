@@ -10,6 +10,11 @@ export default function Login() {
     const handleEmailChange = (e) => {
         e.preventDefault();
         try {
-            const res = axios.post('http://localhost:5000/login', {
+            const res = await axios.post('http://localhost:5000/login', {
                 alert(res.data.message);
+        }catch (error) {
+            alert('Login failed. Please try again.');
         }
+    };
+
+    return (
