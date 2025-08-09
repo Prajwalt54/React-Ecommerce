@@ -1,465 +1,132 @@
-App.css
+models
+user.js
 
-/* ===============================
-    SEXY MODERN GLASSMORPHIC DESIGN
-=============================== */
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+    name: {type: String,required: true},
+    email: {type: String,required: true,unique: true},
+    password: {type: String,required: true}
+});
+module.exports = mongoose.model('User', userSchema);
 
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  overflow: hidden;
-}
 
-/* 🌌 Animated gradient waves background */
-body::before {
-  content: "";
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: repeating-radial-gradient(
-    circle at 50% 50%, 
-    rgba(255,255,255,0.03) 0px, 
-    rgba(255,255,255,0.03) 2px, 
-    transparent 3px, 
-    transparent 100px
-  );
-  animation: rotateBg 60s linear infinite;
-}
 
-@keyframes rotateBg {
-  from { transform: rotate(0deg) translate(-25%, -25%); }
-  to { transform: rotate(360deg) translate(-25%, -25%); }
-}
 
-/* 🔹 Navigation (Glass effect) */
-nav {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 16px;
-  padding: 14px 40px;
-  display: flex;
-  gap: 30px;
-  font-weight: 600;
-  font-size: 18px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
+routes
+routes
 
-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  transition: 0.3s;
-  position: relative;
-}
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const User = require('../models/User'); // Fixed typo: 'requre' -> 'require'
 
-nav a:hover {
-  background: rgba(255,255,255,0.15);
-  color: #00f5ff;
-  box-shadow: 0 0 15px rgba(0,245,255,0.6);
-}
-
-/* 🟢 Main card (Glassmorphism with glow) */
-main {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 20px;
-  padding: 50px 60px;
-  margin-top: 50px;
-  width: 400px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  animation: fadeInUp 1s ease-out;
-}
-
-/* Neon glow border on hover */
-main:hover {
-  box-shadow: 0 0 30px rgba(0,255,255,0.5), 0 20px 50px rgba(0,0,0,0.5);
-}
-
-/* Inputs (floating glow) */
-main input {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 12px 0;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  font-size: 15px;
-  backdrop-filter: blur(4px);
-  transition: 0.3s;
-}
-
-main input::placeholder {
-  color: rgba(255,255,255,0.6);
-}
-
-main input:focus {
-  background: rgba(255,255,255,0.15);
-  box-shadow: 0 0 12px rgba(0,255,255,0.6);
-  transform: translateY(-2px);
-}
-
-/* 🟣 Sexy Neon Button */
-main button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 15px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #00f5ff, #0ff0fc, #00f5ff);
-  background-size: 300% 300%;
-  color: black;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.4s;
-  animation: gradientMove 4s linear infinite;
-}
-
-main button:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 0 20px #00f5ff;
-}
-
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* 🔗 Login link */
-main a {
-  display: block;
-  margin-top: 15px;
-  color: #00f5ff;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-main a:hover {
-  color: #ffffff;
-  text-shadow: 0 0 8px #00f5ff;
-}
-
-/* Entry animation */
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-App.js
-
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Register from './Register';
-import Login from './login';
-import './App.css';
-
-// Simple Home Component
-function Home() {
-  return (
-    <div>
-      
-    </div>
-  );
-}
-
-function App() {
-  return (
-    <Router>
-      <div>
-        <nav>
-          <Link to="/">Home</Link> |{" "}
-          <Link to="/register">Register</Link> |{" "}
-          <Link to="/login">Login</Link>
-        </nav>
-
-        <Routes>
-          <Route path="/" element={<Home />} />       {/* Home route */}
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
-
-export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-Login.css
-
-//LOGIN.CSS
-
-/* Doll / Emoji Animation */
-.doll {
-  font-size: 50px;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
-  transform-origin: center;
-  animation: blink 4s infinite;
-}
-
-/* When eyes are closed */
-.eyes-closed {
-  animation: none;
-  transform: scale(1.1);
-}
-
-/* Idle blinking animation */
-@keyframes blink {
-  0%, 90%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.1); } /* Quick blink */
-}
-
-
-
-
-
-
-
-
-
-
-
-login.js
-
-import React, { useState } from 'react';
-import './App.css';
-import axios from 'axios';
-
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isPasswordFocus, setIsPasswordFocus] = useState(false); // For animation
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+router.post('/register', async (req, res) => {
+    console.log("Register route hit");
+    console.log("Request Body:", req.body);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      alert(res.data.message);
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            console.log("Missing input fields");
+            return res.status(400).json({ message: "All fields required" });
+        }
+        const existingUser = await User.findOne({ email });
+        console.log("existing user check result:", existingUser);
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+        const savedUser = await newUser.save();
+        console.log("User saved:", savedUser);
+        return res.status(201).json({ message: 'User registered successfully' })
     } catch (err) {
-      alert('Login failed');
+        console.error("Error in /register route:", err.message);
+        return res.status(500).json({ message: 'Registration failed', error: err.message });
     }
-  };
+});
 
-  return (
-    <div className="form-container">
-      {/* Doll / Face Emoji */}
-      <div className={`doll ${isPasswordFocus ? 'eyes-closed' : ''}`}>
-        {isPasswordFocus ? '😌' : '👀'}
-      </div>
-
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input 
-          type="email" 
-          placeholder="Email" 
-          onChange={(e) => setEmail(e.target.value)} 
-          required 
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          onFocus={() => setIsPasswordFocus(true)}
-          onBlur={() => setIsPasswordFocus(false)}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-        <a href="/register" className="link">Don't have an account? Register</a>
-      </form>
-    </div>
-  );
-}
-
-
-
-
-
-
-
-Regisre.css
-
-/* 🌟 Premium Register Form Container */
-.form-container {
-  background: rgba(255, 255, 255, 0.08); /* semi-transparent for glass effect */
-  backdrop-filter: blur(18px); /* frosted glass */
-  border: 1px solid rgba(255,255,255,0.15);
-  max-width: 420px;
-  width: 100%;
-  margin: 60px auto;
-  padding: 45px 35px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 1s ease-out;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.form-container:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 30px 60px rgba(0, 255, 255, 0.3);
-}
-
-/* Premium Heading */
-.form-container h2 {
-  margin-bottom: 25px;
-  color: #00f5ff;
-  font-weight: 700;
-  font-size: 28px;
-  letter-spacing: 1px;
-  text-shadow: 0 0 8px rgba(0, 245, 255, 0.5);
-}
-
-/* Premium Inputs */
-.form-container input {
-  width: 100%;
-  padding: 12px 15px;
-  margin: 12px 0;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
-  transition: 0.3s;
-}
-
-.form-container input::placeholder {
-  color: rgba(255,255,255,0.6);
-}
-
-.form-container input:focus {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-/* Sexy Gradient Button */
-.form-container button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 15px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #00f5ff, #00d4ff, #00f5ff);
-  background-size: 300% 300%;
-  color: black;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  animation: gradientMove 4s linear infinite;
-  transition: 0.4s;
-}
-
-.form-container button:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 0 20px #00f5ff;
-}
-
-/* Premium Login Link */
-.form-container .link {
-  display: block;
-  margin-top: 20px;
-  color: #00f5ff;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.3s;
-}
-
-.form-container .link:hover {
-  color: #ffffff;
-  text-shadow: 0 0 10px #00f5ff;
-}
-
-/* Animations */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-
-
-
-
-
-
-
-
-Register.js
-import React, { useState } from 'react';
-import './Register.css'; // Ensure this is the correct path to your CSS file
-import axios from 'axios';
-
-export default function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+router.post('/login', async (req, res) => {
+    console.log("login route hit");
+    console.log("request body:", req.body);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
-      alert(res.data.message);
-    } catch (err) {
-      alert('Registration failed');
+        const { email, password } = req.body;
+        if (!email || !password) {
+            console.log("Missing input fields");
+            return res.status(400).json({ message: "All fields required" });
+        }
+        const user = await User.findOne({ email });
+        console.log("User lookup result:", user);
+        if (!user) {
+            console.log("user not found");
+            return res.status(400).json({ message: 'invalid email or password' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log("password match:", isMatch); // Fixed syntax error: colon (:) → semicolon (;)
+        if (!isMatch) {
+            console.log("incorrect password");
+            return res.status(400).json({ message: 'invalid email or password' });
+        }
+        console.log("login successful for user:", user.email);
+        return res.status(200).json({
+            message: 'login successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (err) { // Fixed misplaced catch block (moved it outside try block properly)
+        console.error("error in /login route:", err.message);
+        return res.status(500).json({ message: 'login failed', error: err.message });
     }
-  };
+});
 
-  return (
-    <div className="form-container">
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Full Name" onChange={(e) => setName(e.target.value)} required />
-        <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Register</button>
-        <a href="/login" className="link">Already have an account? Login</a>
-      </form>
-    </div>
-  );
-}
+module.exports = router;
 
+
+
+
+
+
+
+
+
+server.js
+
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth');
+
+dotenv.config();
+
+const app = express();
+
+mongoose.connect(process.env.MONGO_URI,{ 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+})
+.then(() => console.log("MongoDB connected"))
+.catch((err) => console.error("DB error:", err));
+
+app.use(cors());
+app.use(express.json());
+app.use('/api/auth', authRoutes);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {    
+    console.log(`Server running on port ${PORT}`);
+});
+
+
+
+.env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/loginpage
+JWT_SECRET=yourSecretKey123
