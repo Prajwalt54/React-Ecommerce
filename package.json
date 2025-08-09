@@ -1,20 +1,119 @@
-import React, { useState } from 'react';
-import './App.css';
-import axios from 'axios';
+module
+user.js
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+    name: {type: String,required: true},
+    email: {type: String,required: true,unique: true},
+    password: {type: String,required: true}
+});
+module.exports = mongoose.model('User', userSchema);
 
-export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-    const handleEmailChange = (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', {email,password});
-            alert(res.data.message);
-        }catch (error) {
-            alert('Login failed. Please try again.');
+routs
+auth.js
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const User = require('../models/User'); // Fixed typo: 'requre' -> 'require'
+
+router.post('/register', async (req, res) => {
+    console.log("Register route hit");
+    console.log("Request Body:", req.body);
+    try {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            console.log("Missing input fields");
+            return res.status(400).json({ message: "All fields required" });
         }
-    };
+        const existingUser = await User.findOne({ email });
+        console.log("existing user check result:", existingUser);
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+        const savedUser = await newUser.save();
+        console.log("User saved:", savedUser);
+        return res.status(201).json({ message: 'User registered successfully' })
+    } catch (err) {
+        console.error("Error in /register route:", err.message);
+        return res.status(500).json({ message: 'Registration failed', error: err.message });
+    }
+});
 
-    return (
+router.post('/login', async (req, res) => {
+    console.log("login route hit");
+    console.log("request body:", req.body);
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            console.log("Missing input fields");
+            return res.status(400).json({ message: "All fields required" });
+        }
+        const user = await User.findOne({ email });
+        console.log("User lookup result:", user);
+        if (!user) {
+            console.log("user not found");
+            return res.status(400).json({ message: 'invalid email or password' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log("password match:", isMatch); // Fixed syntax error: colon (:) → semicolon (;)
+        if (!isMatch) {
+            console.log("incorrect password");
+            return res.status(400).json({ message: 'invalid email or password' });
+        }
+        console.log("login successful for user:", user.email);
+        return res.status(200).json({
+            message: 'login successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (err) { // Fixed misplaced catch block (moved it outside try block properly)
+        console.error("error in /login route:", err.message);
+        return res.status(500).json({ message: 'login failed', error: err.message });
+    }
+});
+
+module.exports = router;
+
+
+server.js
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth');
+
+dotenv.config();
+
+const app = express();
+
+mongoose.connect(process.env.MONGO_URI,{ 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+})
+.then(() => console.log("MongoDB connected"))
+.catch((err) => console.error("DB error:", err));
+
+app.use(cors());
+app.use(express.json());
+app.use('/api/auth', authRoutes);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {    
+    console.log(`Server running on port ${PORT}`);
+});
+
+
+.env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/loginpage
+JWT_SECRET=yourSecretKey123
